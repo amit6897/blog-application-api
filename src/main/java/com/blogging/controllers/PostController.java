@@ -4,6 +4,7 @@ import com.blogging.config.AppConstants;
 import com.blogging.payloads.ApiResponse;
 import com.blogging.payloads.PostDto;
 import com.blogging.payloads.PostResponse;
+import com.blogging.services.FileService;
 import com.blogging.services.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,9 @@ import java.util.List;
 public class PostController {
     @Autowired
     private PostService postService;
+
+    @Autowired
+    private FileService fileService;
 
     // create
     @PostMapping("/user/{userId}/category/{categoryId}/posts")
@@ -98,4 +102,7 @@ public class PostController {
         List<PostDto> result = this.postService.searchPosts(keywords);
         return new ResponseEntity<List<PostDto>>(result, HttpStatus.OK);
     }
+
+    // post image upload
+    
 }
