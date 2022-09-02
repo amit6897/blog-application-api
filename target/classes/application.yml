@@ -6,6 +6,7 @@ spring:
     url: jdbc:mysql://localhost:3306/blog
     username: root
     password: amit1234
+    
 
   jpa:
     hibernate:
@@ -22,9 +23,3 @@ spring:
 
 project:
   image: images/
-
-logging:
-  level:
-    org:
-      springframework:
-        security: DEBUG
