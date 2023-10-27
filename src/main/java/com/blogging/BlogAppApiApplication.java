@@ -11,6 +11,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @SpringBootApplication
@@ -39,13 +41,14 @@ public class BlogAppApiApplication implements CommandLineRunner {
 		try {
 			Role role = new Role();
 			role.setId(AppConstants.ADMIN_USER);
-			role.setName("ADMIN_USER");
+			role.setName("ROLE_ADMIn");
 
 			Role role1 = new Role();
 			role1.setId(AppConstants.NORMAL_USER);
-			role1.setName("NORMAL_USER");
+			role1.setName("ROLE_NORMAL");
 
-			List<Role> roles = List.of(role, role1);
+			//List<Role> roles = List.of(role, role1);
+			List<Role> roles = Arrays.asList(role, role1);
 			List<Role> result = this.roleRepository.saveAll(roles);
 
 			result.forEach(r->{
@@ -56,3 +59,5 @@ public class BlogAppApiApplication implements CommandLineRunner {
 		}
 	}
 }
+
+

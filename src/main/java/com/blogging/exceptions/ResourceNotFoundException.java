@@ -1,8 +1,12 @@
 package com.blogging.exceptions;
 
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @NoArgsConstructor
+@Getter
+@Setter
 public class ResourceNotFoundException extends RuntimeException{
     String resourceName;
     String fieldName;
@@ -12,30 +16,6 @@ public class ResourceNotFoundException extends RuntimeException{
         super(String.format("%s not found with%s: %s ", resourceName, fieldName, fieldId));
         this.resourceName = resourceName;
         this.fieldName = fieldName;
-        this.fieldId = fieldId;
-    }
-
-    public String getResourceName() {
-        return resourceName;
-    }
-
-    public void setResourceName(String resourceName) {
-        this.resourceName = resourceName;
-    }
-
-    public String getFieldName() {
-        return fieldName;
-    }
-
-    public void setFieldName(String fieldName) {
-        this.fieldName = fieldName;
-    }
-
-    public long getFieldId() {
-        return fieldId;
-    }
-
-    public void setFieldId(long fieldId) {
         this.fieldId = fieldId;
     }
 }

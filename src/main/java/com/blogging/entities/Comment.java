@@ -1,17 +1,16 @@
 package com.blogging.entities;
 
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.*;
-
+// @NoArgsConstructor
+// @AllArgsConstructor
+@Entity
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Entity
 @Table(name ="COMMENTS_TBL")
 public class Comment {
     @Id

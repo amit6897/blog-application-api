@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
@@ -13,11 +14,13 @@ import javax.validation.constraints.Size;
 public class CategoryDto {
     private Integer categoryId;
 
-    @NotEmpty(message = "Can not be empty")
+    //@NotEmpty(message = "Can not be empty")
+    @NotBlank
     @Size(min = 5 , message ="Title must have atleast 5 characters")
     private String categoryTitle;
 
-    @NotEmpty(message = "Can not be empty")
+    //@NotEmpty(message = "Can not be empty")
+    @NotBlank
     @Size(min = 5 , message ="Description must have atleast 5 characters")
     private String categoryDescription;
 }

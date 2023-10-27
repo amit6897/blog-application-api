@@ -9,20 +9,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/comments")
+@RequestMapping("/api/v1/")
 public class CommentController {
     @Autowired
     private CommentService commentService;
 
-    @PostMapping("/{pId}")
-    public ResponseEntity<CommentDto> createComment(@RequestBody CommentDto commentDto, @PathVariable Integer pId) {
-        CommentDto createCommentDto = this.commentService.createComment(commentDto, pId);
-        return new ResponseEntity<CommentDto>(createCommentDto, HttpStatus.CREATED);
+    @PostMapping("/post/{postId}/comments")
+    public ResponseEntity<CommentDto> createComment(@RequestBody CommentDto comment, @PathVariable Integer postId) {
+        CommentDto createComment = this.commentService.createComment(comment, postId);
+        return new ResponseEntity<CommentDto>(createComment, HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/{pId}")
-    public ResponseEntity<ApiResponse> deleteComment(@PathVariable Integer cId) {
-        this.commentService.deleteComment(cId);
-        return new ResponseEntity<ApiResponse>(new ApiResponse("Deleted comment successfully", true), HttpStatus.OK);
+    @DeleteMapping("/comments/{commentId}")
+    public ResponseEntity<ApiResponse> deleteComment(@PathVariable Integer commentId) {
+        this.commentService.deleteComment(commentId);
+        return new ResponseEntity<ApiResponse>(new ApiResponse("Comment deleted successfully", true), HttpStatus.OK);
     }
 }

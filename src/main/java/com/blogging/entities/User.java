@@ -1,5 +1,6 @@
 package com.blogging.entities;
 
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -7,12 +8,11 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
-@Table (name="USERS_TBL")
+@Table(name="USERS_TBL")
 @NoArgsConstructor
 @Getter
 @Setter

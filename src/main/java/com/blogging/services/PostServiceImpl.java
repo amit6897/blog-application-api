@@ -58,19 +58,22 @@ public class PostServiceImpl implements PostService{
     public PostDto updatePost(PostDto postDto, Integer postId) {
         Post post = this.postRepository.findById(postId).orElseThrow(()
                 -> new ResourceNotFoundException( "Post", " id ", postId));
+        Category category = this.categoryRepository.findById(postDto.getCategory().getCategoryId()).get();
 
-        post.setContent(postDto.getContent());
         post.setTitle(postDto.getTitle());
+        post.setContent(postDto.getContent());
         post.setImageName(postDto.getImageName());
+        post.setCategory(category);
+
         Post updatedPost = this.postRepository.save(post);
-        PostDto postDtos = this.modelMapper.map(updatedPost, PostDto.class);
-        return postDtos;
+        // PostDto postDtos = this.modelMapper.map(updatedPost, PostDto.class);
+        return this.modelMapper.map(updatedPost, PostDto.class);
     }
 
     @Override
     public void deletePost(Integer postId) {
         Post post = this.postRepository.findById(postId).orElseThrow(
-                ()-> new ResourceNotFoundException( "Post", " id ", postId));
+                ()-> new ResourceNotFoundException( "Post", "post id ", postId));
         this.postRepository.delete(post);
     }
 
@@ -78,10 +81,80 @@ public class PostServiceImpl implements PostService{
     public PostDto getPostById(Integer postId) {
         Post post = this.postRepository.findById(postId).orElseThrow(()->
                 new ResourceNotFoundException("Post", "Post id", postId));
-        PostDto postDtos = this.modelMapper.map(post, PostDto.class);
+        // PostDto postDtos = this.modelMapper.map(post, PostDto.class);
+        return this.modelMapper.map(post, PostDto.class);
+    }
+
+    @Override
+    public PostResponse getAllPost(Integer pageNumber, Integer pageSize, String sortBy, String sortDir) {
+        Sort sort = (sortDir.equalsIgnoreCase("asc")) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        /**
+         * Sort sort = null;
+         * if (sortDir.equalsIgnoreCase("asc")) {
+         *      sort = Sort.by(sortBy).ascending();
+         * } else {
+         *      sort = Sort.by(sortBy).descending();
+         * }
+         */
+
+        Pageable pag = PageRequest.of(pageNumber, pageSize, sort);
+        Page <Post> pagePost = this.postRepository.findAll(pag);
+        List <Post> allPosts = pagePost.getContent();
+
+        List <PostDto> postDtos = allPosts.stream().map((p) ->
+                this.modelMapper.map(p, PostDto.class)).collect(Collectors.toList());
+
+        PostResponse postResponse = new PostResponse();
+        postResponse.setContent(postDtos);
+        postResponse.setPageNumber(pagePost.getNumber());
+        postResponse.setPageSize(pagePost.getSize());
+        postResponse.setTotalElements(pagePost.getTotalElements());
+        postResponse.setTotalPages(pagePost.getTotalPages());
+        postResponse.setLastPage(pagePost.isLast());
+
+        return postResponse;
+    }
+
+
+    @Override
+    public List<PostDto> getPostByCategory(Integer catId) {
+        Category category = this.categoryRepository.findById(catId).orElseThrow(()->
+                new ResourceNotFoundException("Category", "Category id", catId));
+        List <Post> posts = this.postRepository.findByCategory(category);
+
+        List <PostDto> postDtos =  posts.stream().map((post) ->
+                this.modelMapper.map(post, PostDto.class)).collect(Collectors.toList());
+        return postDtos;
+    }
+
+    @Override
+    public List<PostDto> getPostByUser(Integer userId) {
+        User user = this.userRepository.findById(userId).orElseThrow(()->
+                new ResourceNotFoundException("User", "User id", userId));
+
+        List <Post> posts = this.postRepository.findByUser(user);
+        List <PostDto> postDtos =  posts.stream().map((post) ->
+                this.modelMapper.map(post, PostDto.class)).collect(Collectors.toList());
 
         return postDtos;
     }
+
+    @Override
+    public List<PostDto> searchPosts(String keyword) {
+        List<Post> posts = this.postRepository.searchByTitle("%" + keyword + "%");
+        List<PostDto> postDtos = posts.stream().map((post)->this.modelMapper.map(post, PostDto.class))
+                .collect(Collectors.toList());
+        return postDtos;
+    }
+
+    /**
+     * @Override
+     * public List<PostDto> searchPosts(String keyword) {
+     *      List<Post> posts = this.postRepository.findByTitleContaining(keyword);
+     *      List<PostDto> postDtos = posts.stream().map((post)->this.modelMapper.map(post, PostDto.class)).collect(Collectors.toList());
+     *      return postDtos;
+     * }
+     */
 
     /*
     @Override
@@ -103,74 +176,4 @@ public class PostServiceImpl implements PostService{
     }
     */
 
-    @Override
-    public PostResponse getAllPost(Integer pageNumber, Integer pageSize, String sortBy, String sortDir) {
-
-        Sort sort = (sortDir.equalsIgnoreCase("asc"))?Sort.by(sortBy).ascending():Sort.by(sortBy).descending();
-
-        /*
-        Sort sort = null;
-        if (sortDir.equalsIgnoreCase("asc")) {
-            sort = Sort.by(sortBy).ascending();
-        } else {
-            sort = Sort.by(sortBy).descending();
-        }
-        */
-
-        Pageable pag= PageRequest.of(pageNumber, pageSize, sort);
-        Page <Post> pagePost = this.postRepository.findAll(pag);
-        List <Post> allPosts = pagePost.getContent();
-
-        List <PostDto> postDtos = pagePost.stream().map((p) ->
-                this.modelMapper.map(p, PostDto.class)).collect(Collectors.toList());
-
-        PostResponse postResponse = new PostResponse();
-        postResponse.setContent(postDtos);
-        postResponse.setPageNumber(pagePost.getNumber());
-        postResponse.setPageSize( pagePost.getSize());
-        postResponse.setTotalElements(pagePost.getTotalElements());
-        postResponse.setTotalPages(pagePost.getTotalPages());
-        postResponse.setLastPage(pagePost.isLast());
-
-        return postResponse;
-    }
-
-
-    @Override
-    public List<PostDto> getPostByCategory(Integer catId) {
-        Category category = this.categoryRepository.findById(catId).orElseThrow(()->
-                new ResourceNotFoundException("Category", "Category id", catId));
-        List <Post> posts = this.postRepository.findByCategory(category);
-        List <PostDto> postDtos =  posts.stream().map((post) ->
-                this.modelMapper.map(post, PostDto.class)).collect(Collectors.toList());
-        return postDtos;
-    }
-
-    @Override
-    public List<PostDto> getPostByUser(Integer userId) {
-        User user = this.userRepository.findById(userId).orElseThrow(()->
-                new ResourceNotFoundException("User", "User id", userId));
-
-        List <Post> posts = this.postRepository.findByUser(user);
-        List <PostDto> postDtos =  posts.stream().map((post) ->
-                this.modelMapper.map(post, PostDto.class)).collect(Collectors.toList());
-
-        return postDtos;
-    }
-
-    @Override
-    public List<PostDto> searchPosts(String keyword) {
-        List<Post> posts = this.postRepository.findByTitleContaining(keyword);
-        List<PostDto> postDtos = posts.stream().map((post)->this.modelMapper.map(post, PostDto.class)).collect(Collectors.toList());
-        return postDtos;
-    }
-
-    /*
-    @Override
-    public List<PostDto> searchPosts(String keyword) {
-        List<Post> posts = this.postRepository.searchByTitle("%"+keyword+"%");
-        List<PostDto> postDtos = posts.stream().map((post)->this.modelMapper.map(post, PostDto.class)).collect(Collectors.toList());
-        return postDtos;
-    }
-     */
 }

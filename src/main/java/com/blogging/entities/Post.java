@@ -1,21 +1,18 @@
 package com.blogging.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
-import javax.persistence.*;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name="POSTS_TBL")
+// @Table(name="posts",uniqueConstraints = {@UniqueConstraint(columnNames = {"title"})})
 public class Post {
     @Id
     @GeneratedValue( strategy= GenerationType.IDENTITY)

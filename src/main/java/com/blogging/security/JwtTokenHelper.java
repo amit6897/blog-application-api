@@ -33,7 +33,7 @@ public class JwtTokenHelper {
         return  claimsResolver.apply(claims);
     }
 
-    //	to retrieve any inform from token we'll need secret key
+    //	to retrieve any information from token we'll need secret key
     private Claims getAllClaimsFromToken(String token) {
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
     }
@@ -54,10 +54,10 @@ public class JwtTokenHelper {
     //	1. Define claims of the token, like Issuer, Expiration. Subject and the ID
     //	2. Sign the JWT using HS512 algorithm and secret key
     //	3. Acc to JWS compact Serialization (https://tols.ietf.org/html/draft-ietf-jose-
-    //	comapction of the 	JWT to a URL-SAFE STRING
+    //	compaction of the JWT to a URL-SAFE STRING
     private String doGenerateToken(Map<String, Object> claims, String subject) {
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY*100))
+                .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY*1000))
                 .signWith(SignatureAlgorithm.HS512, secret).compact();
     }
 

@@ -1,11 +1,14 @@
 package com.blogging.controllers;
 
+import com.blogging.entities.User;
 import com.blogging.exceptions.ApiException;
 import com.blogging.payloads.JwtAuthRequest;
 import com.blogging.payloads.JwtAuthResponse;
 import com.blogging.payloads.UserDto;
+import com.blogging.repositories.UserRepository;
 import com.blogging.security.JwtTokenHelper;
 import com.blogging.services.UserService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,10 +17,10 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/api/v1/auth/")
@@ -35,6 +38,11 @@ public class AuthController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    private ModelMapper mapper;
+
     @PostMapping("/login")
     public ResponseEntity<JwtAuthResponse> createToken(@RequestBody JwtAuthRequest request) throws Exception {
         this.authenticate(request.getUsername(), request.getPassword());
@@ -42,6 +50,7 @@ public class AuthController {
         String token = this.jwtTokenHelper.generateToken(userDetails);
         JwtAuthResponse response = new JwtAuthResponse();
         response.setToken(token);
+        response.setUser(this.mapper.map((User) userDetails, UserDto.class));
         return new ResponseEntity<JwtAuthResponse>(response, HttpStatus.OK);
     }
 
@@ -55,10 +64,16 @@ public class AuthController {
         }
     }
 
-    //register new user api
+    // register new user api
     @PostMapping("/register")
-    public ResponseEntity<UserDto> registerUser(@RequestBody UserDto userDto) {
+    public ResponseEntity<UserDto> registerUser(@Valid @RequestBody UserDto userDto) {
         UserDto registeredUser = this.userService.registerNewUser(userDto);
         return new ResponseEntity<UserDto>(registeredUser, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/current-user/")
+    public ResponseEntity<UserDto> getUser(Principal principal) {
+        User user = this.userRepository.findByEmail(principal.getName()).get();
+        return new ResponseEntity<UserDto>(this.mapper.map(user, UserDto.class), HttpStatus.OK);
     }
 }

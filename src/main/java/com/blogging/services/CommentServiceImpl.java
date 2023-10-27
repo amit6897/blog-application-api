@@ -22,9 +22,10 @@ public class CommentServiceImpl implements CommentService{
     private ModelMapper modelMapper;
 
     @Override
-    public CommentDto createComment(CommentDto commentDto, Integer pId) {
+    public CommentDto createComment(CommentDto commentDto, Integer pId) {   // pId => post id
         Post post= this.postRepository.findById(pId).orElseThrow(()->
                 new ResourceNotFoundException("Post", "Post id", pId));
+
         Comment comment = this.modelMapper.map(commentDto, Comment.class);
         comment.setPost(post);
         Comment savedComment =  this.commentRepository.save(comment);
@@ -33,9 +34,9 @@ public class CommentServiceImpl implements CommentService{
     }
 
     @Override
-    public void deleteComment(Integer cId) {
+    public void deleteComment(Integer cId) {    // cId => comment id
         Comment comment = this.commentRepository.findById(cId).orElseThrow(()->
-                new ResourceNotFoundException("Post", "Post id", cId));
+                new ResourceNotFoundException("Comment", "CommentId", cId));
         this.commentRepository.delete(comment);
     }
 }

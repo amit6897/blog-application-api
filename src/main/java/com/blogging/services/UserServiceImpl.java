@@ -35,6 +35,7 @@ public class UserServiceImpl implements UserService{
         User user = this.modelMapper.map(userDto, User.class);
         //encoded the password
         user.setPassword(this.passwordEncoder.encode(user.getPassword()));
+        // roles
         Role role = this.roleRepository.findById(AppConstants.NORMAL_USER).get();
         user.getRoles().add(role);
         User newUser = this.repository.save(user);
@@ -53,10 +54,11 @@ public class UserServiceImpl implements UserService{
         User user = this.repository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(
                 "User", " id ", userId));
         // user.setId(userDto.getId());
-        user.setAbout(userDto.getAbout());
-        user.setEmail(userDto.getEmail());
         user.setName(userDto.getName());
+        user.setEmail(userDto.getEmail());
         user.setPassword(userDto.getPassword());
+        user.setAbout(userDto.getAbout());
+
         User updatedUser = this.repository.save(user);
         UserDto userToDto = this.usertoDto(updatedUser);
         return userToDto;

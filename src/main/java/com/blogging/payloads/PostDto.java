@@ -18,11 +18,11 @@ import java.util.Set;
 public class PostDto {
     private int id;
 
-    @NotEmpty(message = "Can not be empty")
-    @Size(min = 4 , message ="Content must have atleast 4 characters")
+    //@NotEmpty(message = "Can not be empty")
+    //@Size(min = 4 , message ="Content must have atleast 4 characters")
     private String content;
 
-    @NotEmpty(message = "Can not be empty")
+    //@NotEmpty(message = "Can not be empty")
     private String title;
 
     private String imageName;
